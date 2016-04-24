@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>A* Algorithm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+</head>
+<body style="background-color:#5bc0de" ng-app="myApp" >
+  <div class="container-fluid" ng-controller="aStarController">
+    <div class="row">
+      <div class="col-lg-3 col-sm-12"></div>
+      <div class="col-lg-9 col-sm-12" >
+        <h1 style="padding-left:15px">A* Pathfinding Demonstration</h1>
+        <h4 style="padding-left:15px">by Samuel Rodriguez for COT4401 - TOP 10 ALGORITHMS</h4>
+      </div>
+    </div>
+    <div class="row" >
+      <div class="col-lg-3 col-sm-12">
+        <ul><h4 style="margin-top:5px"><span class="glyphicon glyphicon-book"></span>  Instructions </h4>
+          <li><p><span class="glyphicon glyphicon-info-sign"></span>  Click on a setup</p></li>
+          <li><p><span class="glyphicon glyphicon-info-sign"></span>  Click on a square to turn wall on or off</p></li>
+          <li><p><span class="glyphicon glyphicon-info-sign"></span>  Click on arrows to move Start/Goal</p></li>
+          <li><p><span class="glyphicon glyphicon-info-sign"></span>  Click CLEAR WALLS to erase all walls</p></li>
+          <li><p><span class="glyphicon glyphicon-info-sign"></span>  Click RUN to show path</p></li>
+          <li><p><span class="glyphicon glyphicon-info-sign"></span>  Click CLEAR to erase path</p></li>
+        </ul>
+        <ul><h4 style="margin-top:30px"><span class="glyphicon glyphicon-education"></span>  Color codes </h4>
+        <li><p><span class="glyphicon glyphicon-info-sign"></span>  Grey = Wall </p></li>
+        <li><p><span class="glyphicon glyphicon-info-sign"></span>  Green = Start Square </p></li>
+        <li><p><span class="glyphicon glyphicon-info-sign"></span>  Red = Goal Square </p></li>
+        <li><p><span class="glyphicon glyphicon-info-sign"></span>  Blue = Path </p></li>
+        <li><p><span class="glyphicon glyphicon-info-sign"></span>  Pink = Visited </p></li>
+      </ul>
+      </div>
+      <div class="col-lg-6 col-sm-12">
+        <canvas id="demoCanvas" width="525" height="525" style="-webkit-box-shadow: 0px 5px 29px -2px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 5px 29px -2px rgba(0,0,0,0.75);
+box-shadow: 0px 5px 29px -2px rgba(0,0,0,0.75);"></canvas>
+      </div>
+      <div class="col-lg-3 col-sm-12" >
+        <div class="row" >
+          <div class="col-sm-3 col-lg-6">
+            <button class="btn btn-success" style="margin-bottom:20px" ng-show="showRun" ng-click="run();showRun=!showRun">RUN</button>
+            <button class="btn btn-warning" style="margin-bottom:20px" ng-hide="showRun" ng-click="reset();showRun=!showRun">CLEAR PATH</button>
+          </div>
+          <div class="col-sm-3 col-lg-6">
+            <button class="btn btn-danger"  style="margin-bottom:20px;margin-right:40px" ng-click="clearWalls()">CLEAR WALLS</button>
+          </div>
+        </div>
+        <div class="row" >
+          <h4><span class="glyphicon glyphicon-move"></span> Start / Goal Controls</h4>
+        </div>
+          <div class="row">
+            <div style="display:table" class="col-sm-2 col-lg-3">
+              <div style="display:table-row">
+                <div style="display:table-cell"></div>
+                <div style="display:table-cell"><button class="btn btn-success" ng-click="greenUp()"><span class="glyphicon glyphicon-arrow-up"></span></button></div>
+                <div style="display:table-cell"></div>
+              </div>
+              <div style="display:table-row">
+                <div style="display:table-cell"><button class="btn btn-success" ng-click="greenLeft()"><span class="glyphicon glyphicon-arrow-left"></span></button></div>
+                <div style="display:table-cell"></div>
+                <div style="display:table-cell"><button class="btn btn-success" ng-click="greenRight()"><span class="glyphicon glyphicon-arrow-right"></span></button></div>
+              </div>
+              <div style="display:table-row">
+                <div style="display:table-cell"></div>
+                <div style="display:table-cell"><button class="btn btn-success" ng-click="greenDown()"><span class="glyphicon glyphicon-arrow-down"></span></button></div>
+                <div style="display:table-cell"></div>
+              </div>
+            </div>
+            <div style="display:table" class="col-sm-2 col-lg-3">
+              <div style="display:table-row">
+                <div style="display:table-cell"></div>
+                <div style="display:table-cell"><button class="btn btn-danger" ng-click="redUp()"><span class="glyphicon glyphicon-arrow-up"></span></button></div>
+                <div style="display:table-cell"></div>
+              </div>
+              <div style="display:table-row">
+                <div style="display:table-cell"><button class="btn btn-danger" ng-click="redLeft()"><span class="glyphicon glyphicon-arrow-left"></span></button></div>
+                <div style="display:table-cell"></div>
+                <div style="display:table-cell"><button class="btn btn-danger" ng-click="redRight()"><span class="glyphicon glyphicon-arrow-right"></span></button></div>
+              </div>
+              <div style="display:table-row">
+                <div style="display:table-cell"></div>
+                <div style="display:table-cell"><button class="btn btn-danger" ng-click="redDown()"><span class="glyphicon glyphicon-arrow-down"></span></button></div>
+                <div style="display:table-cell"></div>
+              </div>
+            </div>
+        </div>
+        <div class="row" >
+          <h4><span class="glyphicon glyphicon-pencil"></span> Setups</h4>
+        </div>
+        <div class="row" >
+          <button class="btn btn-primary" style="margin:10px" ng-click="scenario1();showRun=true">SETUP 1</button>
+          <button class="btn btn-primary" style="margin:10px" ng-click="scenario4();showRun=true">SETUP 4</button>
+        </div>
+        <div class="row" >
+          <button class="btn btn-primary" style="margin:10px" ng-click="scenario2();showRun=true">SETUP 2</button>
+          <button class="btn btn-primary" style="margin:10px" ng-click="scenario5();showRun=true">SETUP 5</button>
+        </div>
+        <div class="row" >
+          <button class="btn btn-primary" style="margin:10px" ng-click="scenario3();showRun=true">SETUP 3</button>
+          <button class="btn btn-primary" style="margin:10px" ng-click="scenario6();showRun=true">SETUP 6</button>
+          <!-- <button class="btn btn-warning" style="margin-top:20px" ng-click="randomSquares()">RANDOM</button> -->
+        </div>
+        <div class="row" >
+          <h4><span class="glyphicon glyphicon-road"></span> Heuristic Type</h4>
+        </div>
+        <div class="row">
+          <div class="radio">
+            <label><input type="radio" name="optradio" ng-model="heuristic" value="0" checked="checked">Manhattan Distance</label>
+          </div>
+          <div class="radio">
+            <label><input type="radio" name="optradio" ng-model="heuristic" value="1">Nudge</label>
+          </div>
+          <div class="radio">
+            <label><input type="radio" name="optradio" ng-model="heuristic" value="2">Cross Product</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+  <!-- Script Sources -->
+    <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="js/aStar.js"></script>
+</body>
+</html>
